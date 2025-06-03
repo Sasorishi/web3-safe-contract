@@ -26,15 +26,27 @@
       Veuillez connecter votre wallet pour voter.
     </div>
 
-    <div v-if="hasVoted && account" class="mt-10">
-      <p class="text-xl text-green-700 font-bold mb-4">✅ Merci pour votre vote !</p>
-      <div class="max-w-md mx-auto text-left">
-        <h3 class="text-lg font-semibold mb-2 text-gray-700">🥇 Top 3 des starters :</h3>
-        <ol class="list-decimal list-inside text-gray-800 space-y-1">
-          <li v-for="(entry, index) in topStarters" :key="index">
-            {{ entry.name }} — {{ entry.count }} vote(s)
-          </li>
-        </ol>
+    <div v-if="hasVoted && account" class="mt-12 animate-fade-in">
+      <p class="text-xl text-green-700 font-bold mb-6">Merci pour votre vote !</p>
+      <div class="flex justify-center gap-6 items-end">
+        <div v-if="topStarters[1]" class="flex flex-col items-center">
+          <img :src="getImg(topStarters[1].name)" class="w-16 h-16 mb-2 rounded-full ring-2 ring-gray-400 shadow-sm" />
+          <div class="bg-gray-200 px-3 py-1 rounded-t text-sm">🥈 {{ topStarters[1].name }}</div>
+          <div class="bg-gray-300 w-10 h-20 rounded-b"></div>
+          <span class="text-xs mt-1 text-gray-500">{{ getPercentage(topStarters[1].count) }}%</span>
+        </div>
+        <div v-if="topStarters[0]" class="flex flex-col items-center">
+          <img :src="getImg(topStarters[0].name)" class="w-20 h-20 mb-2 rounded-full ring-4 ring-yellow-400 shadow-lg" />
+          <div class="bg-yellow-300 px-4 py-1 rounded-t font-bold text-sm">🥇 {{ topStarters[0].name }}</div>
+          <div class="bg-yellow-400 w-10 h-28 rounded-b"></div>
+          <span class="text-xs mt-1 text-gray-700 font-medium">{{ getPercentage(topStarters[0].count) }}%</span>
+        </div>
+        <div v-if="topStarters[2]" class="flex flex-col items-center">
+          <img :src="getImg(topStarters[2].name)" class="w-14 h-14 mb-2 rounded-full ring-2 ring-orange-300 shadow-sm" />
+          <div class="bg-orange-200 px-3 py-1 rounded-t text-sm">🥉 {{ topStarters[2].name }}</div>
+          <div class="bg-orange-300 w-10 h-16 rounded-b"></div>
+          <span class="text-xs mt-1 text-gray-500">{{ getPercentage(topStarters[2].count) }}%</span>
+        </div>
       </div>
     </div>
   </div>
@@ -88,4 +100,15 @@ const topStarters = computed(() => {
     .sort((a, b) => b.count - a.count)
     .slice(0, 3)
 })
+
+const getImg = (name) => {
+  const found = starters.find((s) => s.name === name)
+  return found ? found.img : ''
+}
+
+const getPercentage = (count) => {
+  const votes = JSON.parse(localStorage.getItem('votes') || '{}')
+  const total = Object.values(votes).length
+  return total === 0 ? 0 : ((count / total) * 100).toFixed(1)
+}
 </script>
