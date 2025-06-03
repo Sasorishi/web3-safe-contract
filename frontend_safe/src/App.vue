@@ -1,7 +1,5 @@
 <template>
-  <Safe />
+  <router-view />
 </template>
 
-<script setup>
-import Safe from '/src/components/Safe.vue'
-</script>
+<script setup></script>
