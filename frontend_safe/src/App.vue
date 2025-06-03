@@ -1,5 +1,7 @@
 <template>
-  <router-view />
+  <VotingPage />
 </template>
 
-<script setup></script>
+<script setup>
+import VotingPage from './views/VotingPage.vue'
+</script>
