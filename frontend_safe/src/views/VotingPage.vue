@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200">
     <!-- Navbar -->
     <nav class="w-full bg-white shadow-md px-6 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold text-gray-800">PokeVote</h1>
+      <h1 class="text-xl font-bold text-gray-800">PokeVoting</h1>
       <ConnectWallet :account="account" @walletConnected="setAccount" @logout="disconnectWallet" />
     </nav>
 
