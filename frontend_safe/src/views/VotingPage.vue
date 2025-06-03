@@ -23,7 +23,6 @@ import VoteForm from '../components/VoteForm.vue'
 import VoteResult from '../components/VoteResult.vue'
 
 const account = ref(null)
-const votes = ref(JSON.parse(localStorage.getItem('votes') || '{}'))
 
 const setAccount = (addr) => {
   account.value = addr
@@ -31,9 +30,5 @@ const setAccount = (addr) => {
 
 const disconnectWallet = () => {
   account.value = null
-}
-
-const setVotes = (v) => {
-  votes.value = v
 }
 </script>

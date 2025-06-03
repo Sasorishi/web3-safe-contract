@@ -8,7 +8,9 @@
             <img :src="starter.img" :alt="starter.name" class="w-8 h-8" />
             <span class="text-gray-700 font-medium">{{ starter.name }}</span>
           </div>
-          <span class="text-gray-600">{{ counts[starter.name] }} votes ({{ getPercentage(counts[starter.name]) }}%)</span>
+          <span class="text-gray-600"
+            >{{ counts[starter.name] }} votes ({{ getPercentage(counts[starter.name]) }}%)</span
+          >
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div
@@ -22,35 +24,79 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, onMounted } from 'vue'
+import { ethers } from 'ethers'
+import contractJson from '@/VotingSafe.sol/VotingSafe.json'
 
-const props = defineProps({ votes: Object })
+const contractAddress = '0x151293291B674d5A23aF9F6858c8F2364F5b5c64'
+const contractABI = contractJson.abi
+
+const counts = ref({})
+const totalVotes = ref(0)
 
 const allStarters = [
-  { name: 'Bulbizarre', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png' },
-  { name: 'Salamèche', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png' },
-  { name: 'Carapuce', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png' },
-  { name: 'Germignon', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/152.png' },
-  { name: 'Héricendre', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/155.png' },
-  { name: 'Kaiminus', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/158.png' },
-  { name: 'Arcko', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/252.png' },
-  { name: 'Poussifeu', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/255.png' },
-  { name: 'Gobou', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/258.png' }
+  {
+    name: 'Bulbizarre',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+  },
+  {
+    name: 'Salamèche',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
+  },
+  {
+    name: 'Carapuce',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
+  },
+  {
+    name: 'Germignon',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/152.png',
+  },
+  {
+    name: 'Héricendre',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/155.png',
+  },
+  {
+    name: 'Kaiminus',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/158.png',
+  },
+  {
+    name: 'Arcko',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/252.png',
+  },
+  {
+    name: 'Poussifeu',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/255.png',
+  },
+  {
+    name: 'Gobou',
+    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/258.png',
+  },
 ]
 
-const counts = computed(() => {
-  const result = Object.fromEntries(allStarters.map(s => [s.name, 0]))
-  for (const key in props.votes) {
-    const vote = props.votes[key]
-    if (result.hasOwnProperty(vote)) {
-      result[vote]++
-    }
-  }
-  return result
-})
+// Récupérer les votes depuis le contrat
+const fetchVotes = async () => {
+  if (!window.ethereum) return
 
-const totalVotes = computed(() => {
-  return Object.values(counts.value).reduce((acc, val) => acc + val, 0)
+  const provider = new ethers.BrowserProvider(window.ethereum)
+  const contract = new ethers.Contract(contractAddress, contractABI, provider)
+
+  let newCounts = {}
+  let total = 0
+
+  for (let i = 0; i < allStarters.length; i++) {
+    const voteCount = await contract.votes(i)
+    const name = allStarters[i].name
+    const count = Number(voteCount)
+    newCounts[name] = count
+    total += count
+  }
+
+  counts.value = newCounts
+  totalVotes.value = total
+}
+
+onMounted(() => {
+  fetchVotes()
 })
 
 const getPercentage = (count) => {
