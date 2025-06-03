@@ -9,7 +9,7 @@ const abi = JSON.parse(
     "/Applications/MAMP/htdocs/workspace/web3-safe-contract/backend_safe/artifacts/contracts/VotingSafe.sol/VotingSafe.json"
   )
 ).abi;
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+const contractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707";
 
 const safe = new ethers.Contract(contractAddress, abi, hre.ethers.provider);
 
