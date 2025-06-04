@@ -13,6 +13,7 @@ contract VotingSafe {
     Proposal[] public proposals;
 
     mapping(address => bool) public hasVoted;
+    mapping(address => uint) public votedProposal; // 👈 ajout nécessaire
 
     constructor(string[] memory proposalNames) {
         owner = msg.sender;
@@ -28,6 +29,17 @@ contract VotingSafe {
 
         proposals[proposalIndex].voteCount += 1;
         hasVoted[msg.sender] = true;
+        votedProposal[msg.sender] = proposalIndex; // 👈 on garde une trace du vote
+    }
+
+    function resetVote() external {
+        require(hasVoted[msg.sender], "You haven't voted yet");
+
+        uint previousVote = votedProposal[msg.sender];
+        proposals[previousVote].voteCount -= 1;
+
+        hasVoted[msg.sender] = false;
+        delete votedProposal[msg.sender];
     }
 
     function getProposals() external view returns (Proposal[] memory) {

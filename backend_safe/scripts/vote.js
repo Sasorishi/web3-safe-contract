@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function main() {
-  const contractAddress = "0x151293291B674d5A23aF9F6858c8F2364F5b5c64"; // Adresse du contrat (copie depuis le déploiement)
+  const contractAddress = "0x79D335A906Aa8a386E6B2296E9db0990524099c3"; // Adresse du contrat (copie depuis le déploiement)
   const VotingSafe = await hre.ethers.getContractFactory("VotingSafe");
   const contract = VotingSafe.attach(contractAddress);
 
