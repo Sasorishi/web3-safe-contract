@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import contractJson from './VotingSafe.sol/VotingSafe.json'
 
-const contractAddress = '1ccccd9fcb7b6d4b93b848f81beb90e45d18d95e1b134c89ef9f4a61a4572610'
+const contractAddress = import.meta.env.VITE_API_PRIVATE_KEY
 export const contractABI = contractJson.abi
 
 async function vote(proposalIndex) {

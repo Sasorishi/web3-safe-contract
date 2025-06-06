@@ -35,11 +35,18 @@
         </svg>
       </button>
     </div>
+    <button
+      v-if="account"
+      @click="resetVote"
+      class="flex items-center text-white bg-red-500 border border-indigo-300 rounded-full px-4 py-1 shadow-md space-x-4 hover:bg-black"
+    >
+      Réinitialiser mon vote
+    </button>
   </div>
 </template>
 
 <script setup>
-import { defineEmits, defineProps, onMounted, watch, ref } from 'vue'
+import { defineEmits, defineProps, watch, ref } from 'vue'
 import { ethers } from 'ethers'
 import contractJson from '@/VotingSafe.sol/VotingSafe.json' // adapte ce chemin si besoin
 
@@ -49,7 +56,7 @@ const props = defineProps({ account: String })
 const balance = ref('0.00')
 
 // Adresse du contrat (remplace par la tienne si besoin)
-const contractAddress = '0x151293291B674d5A23aF9F6858c8F2364F5b5c64'
+const contractAddress = import.meta.env.VITE_API_PRIVATE_KEY
 const contractABI = contractJson.abi
 
 // Variables d'état
@@ -94,14 +101,31 @@ const truncateAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`
 const fetchBalance = async (address) => {
   if (!window.ethereum || !address) return
   try {
-    const result = await window.ethereum.request({
-      method: 'eth_getBalance',
-      params: [address, 'latest'],
-    })
-    const eth = parseFloat(parseInt(result, 16) / 1e18).toFixed(4)
-    balance.value = eth
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    const balanceBigInt = await provider.getBalance(address)
+    const eth = ethers.formatEther(balanceBigInt)
+    balance.value = parseFloat(eth).toFixed(4)
   } catch (err) {
     console.error('Failed to fetch balance:', err)
+  }
+}
+
+const resetVote = async () => {
+  if (!contract.value || !props.account) return
+
+  try {
+    const tx = await contract.value.resetVote()
+    await tx.wait()
+    console.log('✅ Vote réinitialisé côté blockchain')
+
+    // MAJ côté localStorage aussi si tu le gardes
+    const votes = JSON.parse(localStorage.getItem('votes') || '{}')
+    delete votes[props.account]
+    localStorage.setItem('votes', JSON.stringify(votes))
+
+    emit('voted', votes)
+  } catch (error) {
+    console.error('Erreur lors de la réinitialisation du vote:', error)
   }
 }
 

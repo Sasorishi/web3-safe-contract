@@ -18,7 +18,7 @@ import { ref } from 'vue'
 import { BrowserProvider, Contract, formatEther, parseEther } from 'ethers'
 import SafeABI from '@/abis/Safe.json'
 
-const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+const contractAddress = import.meta.env.VITE_API_PRIVATE_KEY
 
 const provider = ref(null)
 const signer = ref(null)

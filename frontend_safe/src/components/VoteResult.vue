@@ -28,7 +28,7 @@ import { ref, onMounted } from 'vue'
 import { ethers } from 'ethers'
 import contractJson from '@/VotingSafe.sol/VotingSafe.json'
 
-const contractAddress = '0x151293291B674d5A23aF9F6858c8F2364F5b5c64'
+const contractAddress = import.meta.env.VITE_API_PRIVATE_KEY
 const contractABI = contractJson.abi
 
 const counts = ref({})
@@ -84,11 +84,9 @@ const fetchVotes = async () => {
   let total = 0
 
   for (let i = 0; i < allStarters.length; i++) {
-    const voteCount = await contract.votes(i)
-    const name = allStarters[i].name
-    const count = Number(voteCount)
-    newCounts[name] = count
-    total += count
+    const [name, voteCount] = await contract.getProposal(i)
+    newCounts[name] = Number(voteCount)
+    total += Number(voteCount)
   }
 
   counts.value = newCounts
